@@ -4,9 +4,9 @@
 
 ### **Authors** ✒️
 
-- Santiago Escobar León - A00382203
+- Santiago Escobar Leon - A00382203
 - Kevin Steven Nieto Curaca - A003
-- Yeison Antonio Rodríguez Zuluaga - A003
+- Yeison Antonio Rodriguez Zuluaga - A003
 - Ricardo Urbina Ospina - A003
 
 ### **Project Description: Distributed Sorting System**
