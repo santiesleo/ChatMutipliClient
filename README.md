@@ -9,7 +9,7 @@
 - Yeison Antonio Rodriguez Zuluaga - A003
 - Ricardo Urbina Ospina - A003
 
-### **Project Description: Distributed Sorting System**
+### **Project Description**
 
 This project aims to design and implement an instant messaging system capable of meeting specific requirements:
 
