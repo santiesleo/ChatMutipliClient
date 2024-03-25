@@ -25,7 +25,7 @@ class ClientHandler implements Runnable {
             out.println("Bienvenido al chat. Para enviar un mensaje privado, usa: /msg <usuario_destino> <mensaje>");
             out.println("Para enviar un mensaje a un grupo, usa: /msggroup <nombre_grupo> <mensaje>");
             out.println("Para crear un nuevo grupo, usa: /creategroup <nombre_grupo>");
-            out.println("Para unirse a un grupo, usa: /join <nombre_grupo>");
+            out.println("Para unirse a un grupo, usa: /join <nombre_grupo> <usuario_a_anadir>");
             out.println("Para enviar un mensaje de broadcast, simplemente escribe el mensaje.");
             out.println("Escribe 'exit' para salir del chat.");
 
@@ -49,13 +49,14 @@ class ClientHandler implements Runnable {
                     String[] parts = message.split(" ", 2);
                     if (parts.length == 2) {
                         String groupName = parts[1];
-                        server.createGroup(groupName);
+                        server.createGroup(groupName, username);
                     }
                 } else if (message.startsWith("/join ")) {
-                    String[] parts = message.split(" ", 2);
-                    if (parts.length == 2) {
+                    String[] parts = message.split(" ", 3);
+                    if (parts.length == 3) {
                         String groupName = parts[1];
-                        server.addUserToGroup(groupName, username); // Agregar al usuario actual al grupo
+                        String usernameToAdd = parts[2];
+                        server.addUserToGroup(groupName, usernameToAdd); // Agregar al usuario actual al grupo
                     }
                 }
                 else {

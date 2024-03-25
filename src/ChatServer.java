@@ -44,10 +44,11 @@ public class ChatServer {
         System.out.println("Usuario '" + username + "' conectado desde " + socket.getInetAddress());
     }
 
-    public void createGroup(String groupName) {
+    public void createGroup(String groupName, String username) {
         ChatGroup newGroup = new ChatGroup();
         groupNameToGroupMap.put(groupName, newGroup);
         System.out.println("Nuevo grupo '" + groupName + "' creado.");
+        addUserToGroup(groupName, username);
     }
 
     //Broadcast
@@ -85,6 +86,7 @@ public class ChatServer {
             try {
                 PrintWriter out = new PrintWriter(recipientSocket.getOutputStream(), true);
                 out.println(senderUsername + ": " + message);
+                recipientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
