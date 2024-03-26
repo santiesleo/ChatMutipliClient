@@ -10,6 +10,7 @@ public class ChatServer {
     private List<Socket> clientSockets;
     private Map<String, Socket> usernameToSocketMap;
     private Map<String, ChatGroup> groupNameToGroupMap;
+    private Map<String, User> usernameToUserMap;
 
 
     public ChatServer() {
@@ -19,6 +20,7 @@ public class ChatServer {
             clientSockets = new ArrayList<>();
             usernameToSocketMap = new HashMap<>();
             groupNameToGroupMap = new HashMap<>();
+            usernameToUserMap = new HashMap<>();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +42,9 @@ public class ChatServer {
     }
 
     public void addUser(String username, Socket socket) {
+        User user = new User(username, socket);
         usernameToSocketMap.put(username, socket);
+        usernameToUserMap.put(username, user);
         System.out.println("Usuario '" + username + "' conectado desde " + socket.getInetAddress());
     }
 
@@ -52,12 +56,23 @@ public class ChatServer {
     }
 
     //Broadcast
-    public void broadcastMessage(String message, Socket sender) {
+    public void broadcastMessage(String senderUsername, String message, Socket sender) {
         for (Socket clientSocket : clientSockets) {
             if (clientSocket != sender) { // No enviar el mensaje al remitente original
                 try {
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    out.println(message);
+                    // Obtener el nombre de usuario asociado con el socket
+                    String username = getUsernameBySocket(clientSocket);
+                    if (username != null) {
+                        // Obtener el usuario correspondiente al nombre de usuario
+                        User user = usernameToUserMap.get(username);
+                        if (user != null) {
+                            // Acceder al socket del usuario, enviar el mensaje y añadirlo a la lista de mensajes
+                            Message messageToSend = new Message(senderUsername,null, message, System.currentTimeMillis());
+                            user.addMessageToHistory(messageToSend);
+                            PrintWriter out = new PrintWriter(user.getSocket().getOutputStream(), true);
+                            out.println(senderUsername + ": " + message);
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -86,7 +101,7 @@ public class ChatServer {
             try {
                 PrintWriter out = new PrintWriter(recipientSocket.getOutputStream(), true);
                 out.println(senderUsername + ": " + message);
-                recipientSocket.close();
+//                recipientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -126,6 +141,25 @@ public class ChatServer {
         } else {
             System.out.println("El grupo '" + groupName + "' no existe.");
         }
+    }
+
+    // Método para obtener un usuario completo por su nombre de usuario
+    public User getUserByUsername(String username) {
+        return usernameToUserMap.get(username);
+    }
+
+    public ChatGroup getGroupByName(String groupName) {
+        return groupNameToGroupMap.get(groupName);
+    }
+
+    // Método para obtener el nombre de usuario asociado con un socket
+    private String getUsernameBySocket(Socket socket) {
+        for (Map.Entry<String, Socket> entry : usernameToSocketMap.entrySet()) {
+            if (entry.getValue().equals(socket)) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
 }
